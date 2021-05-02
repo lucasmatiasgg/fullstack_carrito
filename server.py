@@ -1,10 +1,12 @@
 from flask import Flask
-from controller.userController import userController
-from controller.dataBaseController import dataBaseController
 import config
+import sys
+from controller.userController import userController
 from dataBaseModel.product import Product
 from dataBaseModel.user import User
-import sys
+from dataBaseModel.credential import Credential
+from dataBaseModel.cart import Cart
+from dataBaseModel.historyCart import association_table
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -15,7 +17,6 @@ app.config.from_pyfile('config.py')
 
 #Blueprints
 app.register_blueprint(userController)
-app.register_blueprint(dataBaseController)
 
 
 

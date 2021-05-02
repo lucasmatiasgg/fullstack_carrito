@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Date, Table
 from sqlalchemy import create_engine
 
 DEBUG = False
@@ -26,7 +26,7 @@ def init_db():
     Base.metadata.create_all(engine)
     Base.metadata.bind = engine
 
-    print("---DB inicializada---")
+    print("---DB creada!---")
 
 def drop_db():
     # Drop DB solo si existe
