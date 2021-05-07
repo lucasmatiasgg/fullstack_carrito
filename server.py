@@ -7,6 +7,9 @@ from dataBaseModel.user import User
 from dataBaseModel.credential import Credential
 from dataBaseModel.cart import Cart
 from dataBaseModel.historyCart import association_table
+from dataBaseModel.item import Item
+from dataBaseModel.orderItem import association_table
+from dataBaseModel.buyOrder import BuyOrder
 
 app = Flask(__name__, instance_relative_config=True)
 
