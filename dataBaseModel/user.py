@@ -6,5 +6,6 @@ class User(config.Base):
     firstName = config.Column(config.String(50))
     lastName = config.Column(config.String(50))
 
+
 def save(self):
     config.save_to_db(self)

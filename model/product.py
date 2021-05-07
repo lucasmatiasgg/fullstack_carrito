@@ -1,11 +1,11 @@
 class Product:
     id= 0
-    firstName= ""
-    lastName= ""
+    description= ""
+    price= 0
 
-    def __init__(self, firstName, lastName):
-        self.firstName = firstName
-        self.lastName = lastName
+    def __init__(self, description, price):
+        self.description = description
+        self.price = price
     
     def __str__(self):
-        return self.firstName + ' ' + self.lastName
+        return self.description + ' ' + self.price
