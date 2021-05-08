@@ -1,0 +1,9 @@
+RESPONSE_CODE_OK=0
+RESPONSE_CODE_ERROR_PARAMS_REQUIRED=11
+RESPONSE_CODE_ERROR_BAD_REQUEST=400
+RESPONSE_CODE_ERROR_NOT_CONTENT=204
+
+RESPONSE_MESSAGE_OK='Transacción realizada con éxito'
+RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED='No se ingresaron uno o varios parámetros requeridos'
+RESPONSE_MESSAGE_ERROR_BAD_REQUEST='Request mal formado'
+RESPONSE_MESSAGE_ERROR_NOT_FOUND='No se encontró información con los filtros de búsqueda ingresados'

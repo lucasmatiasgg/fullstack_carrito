@@ -1,5 +1,5 @@
 import config
-import dataBaseModel.user
+import model.user
 
 class BuyOrder(config.Base):
     __tablename__ = 'buy_order'

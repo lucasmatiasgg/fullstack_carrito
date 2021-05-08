@@ -1,5 +1,5 @@
 import config
-import dataBaseModel.user
+import model.user
 
 class Credential(config.Base):
     __tablename__ = 'credential'
@@ -12,7 +12,7 @@ class Credential(config.Base):
         nullable = False
     )
 
-    dataBaseModel.user = config.relationship(dataBaseModel.user.User)
+    model.user = config.relationship(model.user.User)
 
 def save(self):
     config.save_to_db(self)

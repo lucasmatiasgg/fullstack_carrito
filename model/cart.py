@@ -1,11 +1,10 @@
-class Cart :
-    id = 0
-    date = 
-    totalAmount = 0
+import config
 
-def __init__(self, date, totalAmount):
-        self.date = date
-        self.totalAmount = totalAmount
-    
-def __str__(self):
-    return self.date + ' ' + self.totalAmount
+class Cart(config.Base):
+    __tablename__ = 'cart'
+    id = config.Column(config.Integer, primary_key=True, nullable=False)
+    date = config.Column(config.Date)
+    totalAmount = config.Column(config.Float)
+
+def save(self):
+    config.save_to_db(self)

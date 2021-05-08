@@ -1,11 +1,14 @@
-class User:
-    id= 0
-    amount= 0
-    quantity= 0
+import config
+import model.product
 
-    def __init__(self, amount, quantity):
-        self.amount = amount
-        self.quantity = quantity
-    
-    def __str__(self):
-        return self.amount + ' ' + self.quantity
+class Item(config.Base):
+    __tablename__ = 'item'
+    id_item = config.Column(config.Integer, primary_key=True, nullable=False)
+    quantity = config.Column(config.Integer)
+    amount = config.Column(config.Integer)
+    product_id = config.Column(config.Integer, config.ForeignKey('product.id_product'), nullable = False)
+
+    model.product = config.relationship(model.product.Product)
+
+def save(self):
+    config.save_to_db(self)
