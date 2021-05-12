@@ -7,7 +7,7 @@ class ProductsToDict():
 
 class Product(config.Base, ProductsToDict):
     __tablename__ = 'product'
-    id_product = config.Column(config.Integer, primary_key=True, nullable=False)
+    product_id = config.Column(config.Integer, primary_key=True, nullable=False)
     name = config.Column(config.String(50))
     description = config.Column(config.String(100))
     price = config.Column(config.Float(50))
