@@ -4,7 +4,7 @@ import config
 # tablas, pasan como FK a la intermedia. En caso de que esta intermedia no tenga Pk, ambas serian PK.
 # Pero en este caso podemos implementar un id_order
 
-association_table = config.Table('order_item', config.Base.metadata,
-    config.Column('cart_id', config.Integer, config.ForeignKey('cart.id'), primary_key = True),
-    config.Column('item_id', config.Integer, config.ForeignKey('item.id_item'), primary_key = True)
+order_item = config.Table('order_item', config.Base.metadata,
+    config.Column('cart_id', config.Integer, config.ForeignKey('cart.cart_id'), primary_key = True),
+    config.Column('item_id', config.Integer, config.ForeignKey('item.item_id'), primary_key = True)
 )

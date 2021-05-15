@@ -1,5 +1,6 @@
 import config
 
+
 class User:
     id= 0
     firstName= ""

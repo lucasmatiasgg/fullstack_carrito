@@ -1,11 +1,13 @@
-class Cart :
-    id = 0
-    date = 
-    totalAmount = 0
+import config
+from model.historyCart import history_cart
+from model.orderItem import order_item
 
-def __init__(self, date, totalAmount):
-        self.date = date
-        self.totalAmount = totalAmount
-    
-def __str__(self):
-    return self.date + ' ' + self.totalAmount
+class Cart(config.Base):
+    __tablename__ = 'cart'
+    cart_id = config.Column(config.Integer, primary_key=True, nullable=False)
+    totalAmount = config.Column(config.Float)
+    userRelation = config.relationship('User', secondary=history_cart, backref=config.backref('subsUser', lazy='dynamic'))
+    itemRelation = config.relationship('Item', secondary=order_item, backref=config.backref('subsItem', lazy='dynamic'))
+
+def save(self):
+    config.save_to_db(self)
