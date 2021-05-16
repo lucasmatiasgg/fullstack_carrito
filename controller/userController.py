@@ -13,9 +13,9 @@ userController = Blueprint('userController', __name__)
 @userController.route('/users/create', methods=['POST'])
 def createUser():
     if request.get_json():
-        first = request.get_json().get('first_name')
-        last = request.get_json().get('last_name')
-        userName = request.get_json().get('user_name')
+        first = request.get_json().get('firstName')
+        last = request.get_json().get('lastName')
+        userName = request.get_json().get('userName')
         password = request.get_json().get('password')
 
         if first == None or last == None or userName == None or userName == "":
@@ -82,8 +82,8 @@ def getUserById(id):
 def updateUser(id):
 
     if request.get_json and id != None:
-        first = request.get_json().get('first_name')
-        last = request.get_json().get('last_name')
+        first = request.get_json().get('firstName')
+        last = request.get_json().get('lastName')
     
         count = session.query(User).filter_by(user_id = id).count()
 
@@ -117,13 +117,18 @@ def deleteUser(id):
         errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_USER_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_USER_NOT_EXISTS, False)
         return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
 
-    stmt = (
+    stmtCredential = (
+        delete(Credential).
+        where(Credential.user_id == id)
+    )
+
+    stmtUser = (
         delete(User).
         where(User.user_id == id)
     )
 
-    print (stmt)
-    session.execute(stmt)
+    session.execute(stmtCredential)
+    session.execute(stmtUser)
     session.commit()
 
     response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
