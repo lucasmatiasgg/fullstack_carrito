@@ -21,7 +21,7 @@ def createProduct():
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
 
         count = session.query(Product).filter_by(name=name).count()
-        if  count > 1:
+        if  count > 0:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PRODUCT_ALREADY_EXISTS, constants.RESPONSE_MESSAGE_ERROR_PRODUCT_ALREADY_EXISTS, False)
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
         
