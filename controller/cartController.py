@@ -77,29 +77,20 @@ def getProductsByCartId(id):
     if id != None:
 
         results =  session.query(Item, Product, order_item). \
-            select_from(Product).join(Item).join(order_item).all()
-
-        #for product, item, order in results:
-            #print(product.product_id, item.item_id, order.item_id)
-        
+            select_from(Product).join(Item).join(order_item). \
+            filter(order_item.columns.cart_id == id).all()        
 
         orderItemList = []
         for products in results:
             orderItemList.append(products)
-        print(orderItemList[1])
-        print("---------------------------------------")
-        print(orderItemList[1].Product.__dict__)
 
+        for x in range(len(orderItemList)):
+            print(orderItemList[x])
+            print("------------------------------------")
 
-        #El problema es que esto hace el join con las clases. order_item no es una clase.
-        #results =  session.query(Item, Product).join(Item).all()
+        jsonList = json.dumps(orderItemList)
 
-        #for item, product in results:
-            #print("ID PRODUCT:", item.item_id, "ID ITEM:", product.product_id)
-
-        
-
-        return "test"
+        return 
 
 
 
