@@ -12,6 +12,7 @@ from model.orderItem import order_item
 from model.cart import Cart, save
 from controller.productController import getPriceById
 from model.user import User
+from model.cartProducts import CartProducts, CartProductsEncoder
 import constants
 
 
@@ -76,21 +77,32 @@ def getProductsByCartId(id):
 #     #TODO Pendiente de buscar como hacer la query con sqlalchemy
     if id != None:
 
+
         results =  session.query(Item, Product, order_item). \
             select_from(Product).join(Item).join(order_item). \
-            filter(order_item.columns.cart_id == id).all()        
+            filter(order_item.columns.cart_id == id).all()
 
         orderItemList = []
+        
         for products in results:
-            orderItemList.append(products)
+            product = products.Product
+            item = products.Item
 
-        for x in range(len(orderItemList)):
-            print(orderItemList[x])
-            print("------------------------------------")
+            cartProducts = CartProducts(product.name, item.quantity, product.price, item.amount)
+            cartProductsJSONData = CartProductsEncoder().encode(cartProducts)
+            print(cartProductsJSONData)
+            orderItemList.append(cartProductsJSONData)
+            print("----------------")
+            print(orderItemList)
+            
 
-        jsonList = json.dumps(orderItemList)
+        jsonResponse = {}
+        jsonResponse['products'] = orderItemList
+        print(jsonResponse)
+        
+        response = json.dumps(jsonResponse)
 
-        return 
+        return Response(response,status=200)
 
 
 
