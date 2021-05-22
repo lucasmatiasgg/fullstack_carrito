@@ -1,3 +1,4 @@
+import json
 from json import JSONEncoder
 
 class EntityResponse:
@@ -10,10 +11,10 @@ class EntityResponse:
         self.message = message
         self.success = success
 
-    def __str__(self):
-        return self.errorCode + ' - ' + self.message
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
 
 # subclass JSONEncoder
 class EntityResponseEncoder(JSONEncoder):
-        def default(self, obj):
-            return obj.__dict__
+    def default(self, obj):
+        return obj.__dict__

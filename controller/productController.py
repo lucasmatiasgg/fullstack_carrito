@@ -130,15 +130,22 @@ def getProducts():
     
     productList = []
     for product in products:    
+
+        print("\nPRODUCT")
+        print(type(product.products_to_dict()))
+        print(product.products_to_dict())
         productList.append(product.products_to_dict())
+    
+    print("productList = ")
+    print(productList)
     
 
 
     if productList.count != 0:
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
         
-        # print(EntityResponseEncoder().encode(EntityResponse))
-        responseObject['data'] = EntityResponseEncoder().encode(EntityResponse)
+        
+        responseObject['status'] = json.loads(response.toJson())
         responseObject['products'] = productList
         jsonResponse = json.dumps(responseObject)
 

@@ -74,9 +74,7 @@ def createProduct():
 
 @cartController.route('/carts/getProductsByCartId/<int:id>')
 def getProductsByCartId(id):
-#     #TODO Pendiente de buscar como hacer la query con sqlalchemy
     if id != None:
-
 
         results =  session.query(Item, Product, order_item). \
             select_from(Product).join(Item).join(order_item). \
@@ -89,21 +87,33 @@ def getProductsByCartId(id):
             item = products.Item
 
             cartProducts = CartProducts(product.name, item.quantity, product.price, item.amount)
-            cartProductsJSONData = CartProductsEncoder().encode(cartProducts)
-            print(cartProductsJSONData)
-            orderItemList.append(cartProductsJSONData)
-            print("----------------")
-            print(orderItemList)
             
-
-        jsonResponse = {}
-        jsonResponse['products'] = orderItemList
-        print(jsonResponse)
+            cartProductsJSONData = json.loads(cartProducts.toJson())
+            print("\ncartProductsJSONData")
+            print(cartProductsJSONData)
+            print(type(cartProductsJSONData))
+            orderItemList.append(cartProductsJSONData)
         
-        response = json.dumps(jsonResponse)
+        
+        print("orderItemList")
+        print(orderItemList)
+            
+        if orderItemList.count != 0:
+            responseObject = {}
+            response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+        
+            responseObject['status'] = json.loads(response.toJson())
+            responseObject['products'] = orderItemList
+            jsonResponse = json.dumps(responseObject)
 
-        return Response(response,status=200)
+            return Response(jsonResponse,status=200)
 
+        notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
+        return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
+    
+
+    errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
+    return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
 
 
 def addNewItem(idProduct, quantity, totalItem):
