@@ -130,3 +130,8 @@ dmypy.json
 
 /.vscode
 instance/
+
+#quasar
+.quasar/
+
+node_modules/
