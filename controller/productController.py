@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request, Response, json
 from model.product import Product, save
-from model.entityResponse import EntityResponse
+from model.entityResponse import EntityResponse, EntityResponseEncoder
 from sqlalchemy import update, delete, select
 import constants
 from config import session
@@ -125,15 +125,31 @@ def getProducts():
     # TODO Hay que usar paginacion
     
     products = session.query(Product)
+    responseObject = {}
+    
+    
     productList = []
-    for product in products:
-        productList.append(json.dumps(product.products_to_dict()))
-        
+    for product in products:    
+
+        print("\nPRODUCT")
+        print(type(product.products_to_dict()))
+        print(product.products_to_dict())
+        productList.append(product.products_to_dict())
+    
+    print("productList = ")
     print(productList)
+    
+
 
     if productList.count != 0:
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-        return Response(productList,status=200)
+        
+        
+        responseObject['status'] = json.loads(response.toJson())
+        responseObject['products'] = productList
+        jsonResponse = json.dumps(responseObject)
+
+        return Response(jsonResponse,status=200)
 
     notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
     return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
