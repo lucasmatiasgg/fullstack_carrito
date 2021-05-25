@@ -1,4 +1,6 @@
 import config
+import json
+
 # from model.products_to_dict import ProductsToDict
 
 class ProductsToDict():

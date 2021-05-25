@@ -12,6 +12,7 @@ from model.orderItem import order_item
 from model.cart import Cart, save
 from controller.productController import getPriceById
 from model.user import User
+from model.cartProducts import CartProducts, CartProductsEncoder
 import constants
 
 
@@ -71,9 +72,56 @@ def createProduct():
     return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
 
 
-# @cartController.route('/carts/getProductsByCartId/<int:id>')
-# def getProductsByCartId(id):
-#     #TODO Pendiente de buscar como hacer la query con sqlalchemy
+@cartController.route('/carts/getProductsByCartId/<int:id>')
+def getProductsByCartId(id):
+    if id != None:
+
+        results =  session.query(Item.quantity, Product.name, Product.price, Item.amount). \
+            select_from(Product).join(Item).join(order_item). \
+            filter(order_item.columns.cart_id == id).all()
+
+        print ("......................................results......................................")
+        print (results)
+        print ("......................................results......................................")
+        orderItemList = []
+
+
+        for products in results:
+            name = products.name
+            quantity = products.quantity
+            price = products.price
+            amount = products.amount
+
+            cartProducts = CartProducts(name, quantity, price, amount)
+            
+            cartProductsJSONData = json.loads(cartProducts.toJson())
+            print("\ncartProductsJSONData")
+            print(cartProductsJSONData)
+            print(type(cartProductsJSONData))
+            orderItemList.append(cartProductsJSONData)
+        
+        
+        print("orderItemList")
+        print(orderItemList)
+
+            
+        if orderItemList.count != 0:
+            responseObject = {}
+            response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+        
+            responseObject['status'] = json.loads(response.toJson())
+            responseObject['products'] = orderItemList
+            jsonResponse = json.dumps(responseObject)
+
+            return Response(jsonResponse,status=200)
+
+        notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
+        return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
+    
+
+    errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
+    return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
+
 
 def addNewItem(idProduct, quantity, totalItem):
     if idProduct != None and quantity > 0:
