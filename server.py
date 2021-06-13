@@ -12,8 +12,10 @@ from model.historyCart import history_cart
 from model.item import Item
 from model.orderItem import order_item
 from model.buyOrder import BuyOrder
+from flask_cors import CORS
 
 app = Flask(__name__, instance_relative_config=True)
+CORS(app)
 
 #config
 app.config.from_object('config')

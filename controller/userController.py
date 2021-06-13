@@ -71,8 +71,14 @@ def getUserById(id):
     
     if user != None:
         print(user.__dict__)
+        responseObject = {}
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-        return Response(json.dumps(user.users_to_dict()), status = 200)
+        
+        responseObject['status'] = json.loads(response.toJson())
+        responseObject['userInfo'] = user.users_to_dict()
+
+        jsonResponse = json.dumps(responseObject)
+        return Response(jsonResponse,status=200)
 
     notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
     return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
@@ -133,3 +139,33 @@ def deleteUser(id):
 
     response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
     return Response(json.dumps(response.__dict__), status = 200)
+
+@userController.route('/users/validateCredentials', methods=['POST'])
+def validateCredentials():
+    if request.get_json():
+        userName = request.get_json().get('userName')
+        password = request.get_json().get('password')
+        
+
+        if userName == None or password == None :
+            errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
+            return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
+        
+
+        try:
+            user = session.query(Credential).filter_by(userName = userName).first()
+            print(user)
+        except Exception as e:
+            print(e)
+            notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_CREDENTIALS, constants.RESPONSE_MESSAGE_ERROR_INVALID_CREDENTIALS, False)
+            return Response(json.dumps(notFoundResponse.__dict__), status = 200)
+    
+        if user != None and user.password == password:
+            response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+            return Response(json.dumps(response.__dict__), status = 200)
+        
+        response = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_CREDENTIALS, constants.RESPONSE_MESSAGE_ERROR_INVALID_CREDENTIALS, False)
+        return Response(json.dumps(response.__dict__), status = 200)
+    
+    errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
+    return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')

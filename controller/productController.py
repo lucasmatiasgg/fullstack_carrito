@@ -5,6 +5,7 @@ from model.entityResponse import EntityResponse, EntityResponseEncoder
 from sqlalchemy import update, delete, select
 import constants
 from config import session
+from flask_cors import cross_origin
 
 productController = Blueprint('productController', __name__)
 

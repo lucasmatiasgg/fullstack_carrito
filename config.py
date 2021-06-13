@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 DEBUG = False
 
 Base = declarative_base()
-engine = create_engine('mysql+mysqlconnector://root:Loreto20@localhost:3306')
+engine = create_engine('mysql+mysqlconnector://lgomez:password@localhost:3306')
 
 session = sessionmaker()
 session.configure(bind=engine)

@@ -5,14 +5,19 @@
 
       <q-card-section>
         <div class="text-h6">{{name}}</div>
-        <div class="text-subtitle2">{{description}}</div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
-        ${{ price }}
+        Precio unitario: ${{ price }}
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        Cantidad: {{ quantity }}
+      </q-card-section>
+      <q-card-section class="q-pt-none">
+        Total: ${{ amount }}
       </q-card-section>
       <q-card-actions>
-        <q-btn v-on:click="addProductToCart(name)" flat>Agregar al carrito</q-btn>
+        <q-btn v-on:click="removeProductFromCart(name)" flat>Eliminar</q-btn>
       </q-card-actions>
     </q-card>
 
@@ -20,19 +25,21 @@
 </template>
 
 <script>
-import { LOAD_USER_INFO } from '../store/user/types'
-
 export default {
   props: {
     name: {
       type: String,
       required: true
     },
-    description: {
-      type: String,
-      default: 'description'
-    },
     price: {
+      type: Number,
+      default: 0
+    },
+    quantity: {
+      type: Number,
+      default: 0
+    },
+    amount: {
       type: Number,
       default: 0
     },
@@ -41,12 +48,9 @@ export default {
       default: 'https://cdn.quasar.dev/img/mountains.jpg'
     }
   },
-  mounted: function () {
-    this.$store.dispatch(LOAD_USER_INFO)
-  },
   methods: {
-    addProductToCart (name) {
-      alert('ADD:' + name)
+    removeProductFromCart (name) {
+      alert('REMOVE:' + name)
     }
   }
 }
