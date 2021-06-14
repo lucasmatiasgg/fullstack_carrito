@@ -23,7 +23,7 @@ export default {
         this.$q.notify({
           color: 'negative',
           position: 'top',
-          message: 'Loading failed',
+          message: 'Estamos con problemas de conexión',
           icon: 'report_problem'
         })
       })

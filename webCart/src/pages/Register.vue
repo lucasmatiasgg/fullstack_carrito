@@ -71,7 +71,6 @@ export default {
         password: this.password
       })
         .then((response) => {
-          debugger
           if (!response.data.success) {
             this.$q.notify({
               color: 'negative',
@@ -85,7 +84,7 @@ export default {
               color: 'positive',
               position: 'top',
               message: response.data.message,
-              icon: 'report_success'
+              icon: 'check_circle'
             })
           }
         })

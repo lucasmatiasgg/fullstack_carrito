@@ -1,3 +1,4 @@
 export default {
-  productCartList: []
+  productCartList: [],
+  idCart: 0
 }

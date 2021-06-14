@@ -16,6 +16,7 @@ def createProduct():
         name = request.get_json().get('name')
         description = request.get_json().get('description')
         price = request.get_json().get('price')
+        image = request.get_json().get('image')
 
         if name == None or description == None or price == None:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
@@ -31,6 +32,7 @@ def createProduct():
         product.name = name
         product.description = description
         product.price = price
+        product.image = image
 
         save(product)
 
@@ -48,7 +50,7 @@ def getProductByName(id):
         return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
     
     try:
-        product = session.query(Product).filter_by(product_id=id).first()
+        product = session.query(Product).filter_by(productId=id).first()
     except Exception as e:
         print(e)
         notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
@@ -73,7 +75,7 @@ def updateProduct(id):
         price = request.get_json().get('price')
         name = request.get_json().get('name')
 
-        count = session.query(Product).filter_by(product_id=id).count()
+        count = session.query(Product).filter_by(productId=id).count()
         if  count == 0:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PRODUCT_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_PRODUCT_NOT_EXISTS, False)
             return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
@@ -84,7 +86,7 @@ def updateProduct(id):
 
         stmt = (
             update(Product).
-            where(Product.product_id==id).
+            where(Product.productId==id).
             values(name=name, description=description, price=price)
         )
         print(stmt)
@@ -104,14 +106,14 @@ def deleteProduct(id):
         errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
         return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
     
-    count = session.query(Product).filter_by(product_id=id).count()
+    count = session.query(Product).filter_by(productId=id).count()
     if  count == 0:
         errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PRODUCT_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_PRODUCT_NOT_EXISTS, False)
         return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
     
     stmt = (
         delete(Product).
-        where(Product.product_id==id)
+        where(Product.productId==id)
     )
     print(stmt)
     session.execute(stmt)
@@ -137,10 +139,7 @@ def getProducts():
         print(product.products_to_dict())
         productList.append(product.products_to_dict())
     
-    print("productList = ")
-    print(productList)
-    
-
+    print("productList = ", productList)
 
     if productList.count != 0:
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
@@ -157,7 +156,7 @@ def getProducts():
 
 def getPriceById(id):
     if id != None:
-         product = session.query(Product).filter_by(product_id=id).first()
+         product = session.query(Product).filter_by(productId=id).first()
          print("getPriceById - PRODUCT")
          print(product)
          return product.price

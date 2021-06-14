@@ -6,7 +6,7 @@ class Item(config.Base):
     item_id = config.Column(config.Integer, primary_key=True, nullable=False)
     quantity = config.Column(config.Integer)
     amount = config.Column(config.Integer)
-    product_id = config.Column(config.Integer, config.ForeignKey('product.product_id'), nullable = False)
+    productId = config.Column(config.Integer, config.ForeignKey('product.productId'), nullable = False)
 
     model.product = config.relationship(model.product.Product)
 

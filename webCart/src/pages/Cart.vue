@@ -1,9 +1,12 @@
 <template>
-  <div v-if="productCartList !== []" class="q-pa-md row items-start q-gutter-md">
+  <div v-if="productsData.length !== 0" class="q-pa-md items-start q-gutter-md">
+      <h5>Carrito de compras</h5>
+      <div class="row ">
       <CartProducts
           v-for="data in productsData"
           :key="data.name"
           v-bind="data"/>
+      </div>
       <div class="row justify-center">
           <q-btn v-on:click="buyOrder" label="Finalizar Compra" color="negative" />
       </div>
@@ -37,8 +40,10 @@ export default {
     }
   },
   mounted: function () {
-    console.log('MOUNTED')
-    this.$store.dispatch(LOAD_PRODUCTS_FROM_CART)
+    console.log('CART - MOUNTED')
+    const idCart = this.$store.state.cart.idCart
+    console.log('cartId:' + idCart)
+    this.$store.dispatch(LOAD_PRODUCTS_FROM_CART, { idCart })
   },
   computed: {
     productsData: function () {

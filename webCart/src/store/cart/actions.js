@@ -1,10 +1,11 @@
-import { LOAD_PRODUCTS_FROM_CART } from './types'
+import { LOAD_PRODUCTS_FROM_CART, ADD_PRODUCT_TO_CART } from './types'
 import { api } from 'boot/axios'
 
 export default {
-  [LOAD_PRODUCTS_FROM_CART] ({ commit }) {
+  [LOAD_PRODUCTS_FROM_CART] ({ commit }, data) {
     console.log('FETCHING PRODUCTS FROM CART')
-    api.get('/carts/getProductsByCartId/1')
+    console.log('cartId:' + data.idCart)
+    api.get('/carts/getProductsByCartId/' + data.idCart)
       .then((response) => {
         if (!response.data.status.success) {
           this.$q.notify({
@@ -19,13 +20,30 @@ export default {
           commit('addProductsFromCart', response.data.products)
         }
       })
-      .catch(() => {
-        this.$q.notify({
-          color: 'negative',
-          position: 'top',
-          message: 'Loading failed',
-          icon: 'report_problem'
-        })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  [ADD_PRODUCT_TO_CART] ({ commit }, info) {
+    console.log('ADDING PRODUCTS TO CART')
+    console.log(info.data.productId + ' - ' + info.data.quantity)
+    api.post('/carts/addProductToCart',
+      {
+        idProduct: info.data.productId,
+        quantity: info.data.quantity,
+        idUser: info.data.userId
+      })
+      .then((response) => {
+        if (!response.data.status.success) {
+          console.log(response.data.status.message)
+        } else {
+          console.log('ACTIONS-ADD_PRODUCT_TO_CART-OK')
+          console.log(response.data)
+          commit('setCartId', response.data.idCart)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
       })
   }
 }

@@ -1,4 +1,6 @@
 export default {
   firstName: '',
-  lastName: ''
+  lastName: '',
+  userId: 0,
+  cartId: 0
 }

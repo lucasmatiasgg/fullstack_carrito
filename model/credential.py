@@ -6,9 +6,9 @@ class Credential(config.Base):
     credential_id = config.Column(config.Integer, primary_key=True, nullable=False)
     userName = config.Column(config.String(50))
     password = config.Column(config.String(20))
-    user_id = config.Column(
+    userId = config.Column(
         config.Integer,
-        config.ForeignKey('user.user_id'),
+        config.ForeignKey('user.userId'),
         nullable = False
     )
 

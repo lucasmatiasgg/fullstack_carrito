@@ -31,12 +31,12 @@ def createProduct():
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
         
 
-        count = session.query(Product).filter_by(product_id=idProduct).count()
+        count = session.query(Product).filter_by(productId=idProduct).count()
         if count == 0:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PRODUCT_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_PRODUCT_NOT_EXISTS, False)
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
         
-        count = session.query(User).filter_by(user_id=idUser).count()
+        count = session.query(User).filter_by(userId=idUser).count()
         if count == 0:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_USER_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_USER_NOT_EXISTS, False)
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
@@ -65,8 +65,13 @@ def createProduct():
         result = updateCart(idCart, idItem, totalItem)
 
         if result == 0:
+            responseObject = {}
+
             response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-            return Response(json.dumps(response.__dict__),status=201)
+            responseObject['status'] = json.loads(response.toJson())
+            responseObject['idCart'] = idCart
+            jsonResponse = json.dumps(responseObject)
+            return Response(jsonResponse,status=201)
     
     errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
     return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
@@ -78,7 +83,7 @@ def getProductsByCartId(id):
 
         results =  session.query(Item.quantity, Product.name, Product.price, Item.amount). \
             select_from(Product).join(Item).join(order_item). \
-            filter(order_item.columns.cart_id == id).all()
+            filter(order_item.columns.cartId == id).all()
 
         print ("......................................results......................................")
         print (results)
@@ -133,7 +138,7 @@ def addNewItem(idProduct, quantity, totalItem):
 
         item = Item()
         item.item_id = maxId + 1
-        item.product_id = idProduct
+        item.productId = idProduct
         item.quantity = quantity
         item.amount = totalItem
 
@@ -143,48 +148,48 @@ def addNewItem(idProduct, quantity, totalItem):
     
 def getCartIdByUser(idUser):
     if idUser != None:
-        historyCart = session.query(history_cart).filter_by(user_id=idUser).first()
+        historyCart = session.query(history_cart).filter_by(userId=idUser).first()
          
         if historyCart != None:
             print("getCartIdByUser - historyCart")
-            print(historyCart.cart_id)
-            return historyCart.cart_id
+            print(historyCart.cartId)
+            return historyCart.cartId
         return 0
     return -1
 
 def createCartByUser(idUser):
     if idUser != None:
-        maxId = session.query(func.max(Cart.cart_id)).scalar()
+        maxId = session.query(func.max(Cart.cartId)).scalar()
         print("createCartByUser - MaxID: " + str(maxId))
         if maxId == None:
             maxId = 0
 
         print("MaxID: " + str(maxId))
         cart = Cart()
-        cart.cart_id = maxId + 1
+        cart.cartId = maxId + 1
         cart.totalAmount = 0
 
         save(cart)
 
         # Una vez creado el carrito hay que asociarlo a la tabla history_cart
         user = User()
-        user = session.query(User).filter_by(user_id=idUser).first()
+        user = session.query(User).filter_by(userId=idUser).first()
         cart.userRelation.append(user)
         session.commit()
-        return cart.cart_id
+        return cart.cartId
 
     return -1
 
 def updateCart(idCart, idItem, totalItem):
     if idCart != None:
         cart = Cart()
-        cart = session.query(Cart).filter_by(cart_id=idCart).first()
+        cart = session.query(Cart).filter_by(cartId=idCart).first()
 
         newAmount = cart.totalAmount + totalItem
 
         stmt = (
             update(Cart).
-            where(Cart.cart_id == idCart).
+            where(Cart.cartId == idCart).
             values(totalAmount=newAmount)
         )
         session.execute(stmt)
@@ -197,3 +202,35 @@ def updateCart(idCart, idItem, totalItem):
 
         return 0
     return -1
+
+
+@cartController.route('/carts/deleteItem/<int:idProduct>', methods=['DELETE'])
+def deleteItem(idProduct):
+    if idProduct  == None:
+        errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PRODUCT_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_PRODUCT_NOT_EXISTS, False)
+        return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
+
+    idToDelete =  session.query(Item.item_id). \
+                    select_from(Item).join(order_item). \
+                    filter(order_item.columns.item_id == Item.item_id and \
+                    Item.productId == idProduct and order_item.columns.cartId == 2).first()
+
+    print ('==============')
+    print (idToDelete)
+    print ('==============')
+    
+    stmtDelete = (
+        delete(Item).
+        where(Item.productId == idToDelete)
+    )
+
+    print ('==============')
+    print (stmtDelete)
+    print ('==============')
+    
+    # session.execute(stmtDelete)
+    # session.commit()
+    
+
+    response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+    return Response(json.dumps(response.__dict__), status = 200)

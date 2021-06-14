@@ -5,6 +5,6 @@ import config
 # Pero en este caso podemos implementar un id_order
 
 order_item = config.Table('order_item', config.Base.metadata,
-    config.Column('cart_id', config.Integer, config.ForeignKey('cart.cart_id'), primary_key = True),
+    config.Column('cartId', config.Integer, config.ForeignKey('cart.cartId'), primary_key = True),
     config.Column('item_id', config.Integer, config.ForeignKey('item.item_id'), primary_key = True)
 )

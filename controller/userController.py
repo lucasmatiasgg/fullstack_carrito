@@ -7,6 +7,7 @@ from sqlalchemy import update, delete
 import constants
 from config import session
 from sqlalchemy.sql.expression import func
+from controller.cartController import getCartIdByUser
 
 userController = Blueprint('userController', __name__)
 
@@ -36,13 +37,13 @@ def createUser():
         newCredential = Credential()
         newCredential.userName = userName
         newCredential.password = password
-        maxId = session.query(func.max(User.user_id)).scalar()
+        maxId = session.query(func.max(User.userId)).scalar()
         print('maxId: ', maxId)
 
         if maxId != None:
-            newCredential.user_id = maxId + 1
+            newCredential.userId = maxId + 1
         else:
-            newCredential.user_id = 1
+            newCredential.userId = 1
 
         newCredential.userName = userName
         newCredential.password = password
@@ -62,7 +63,7 @@ def getUserById(id):
         return Response(json.dumps(errorResponse.__dict__), status = 400, mimetype = 'application/json')
 
     try:
-        user = session.query(User).filter_by(user_id = id).first()
+        user = session.query(User).filter_by(userId = id).first()
         print(user)
     except Exception as e:
         print(e)
@@ -91,7 +92,7 @@ def updateUser(id):
         first = request.get_json().get('firstName')
         last = request.get_json().get('lastName')
     
-        count = session.query(User).filter_by(user_id = id).count()
+        count = session.query(User).filter_by(userId = id).count()
 
         if count == 0:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_USER_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_USER_NOT_EXISTS, False)
@@ -104,7 +105,7 @@ def updateUser(id):
 
         stmt = (
                 update(User).
-                where(User.user_id==id).
+                where(User.userId==id).
                 values(firstName=first, lastName = last)
             )
         print(stmt)
@@ -125,12 +126,12 @@ def deleteUser(id):
 
     stmtCredential = (
         delete(Credential).
-        where(Credential.user_id == id)
+        where(Credential.userId == id)
     )
 
     stmtUser = (
         delete(User).
-        where(User.user_id == id)
+        where(User.userId == id)
     )
 
     session.execute(stmtCredential)
@@ -155,14 +156,23 @@ def validateCredentials():
         try:
             user = session.query(Credential).filter_by(userName = userName).first()
             print(user)
+            idCart = getCartIdByUser(user.userId)
+            print('IDCART', idCart)
         except Exception as e:
             print(e)
             notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_CREDENTIALS, constants.RESPONSE_MESSAGE_ERROR_INVALID_CREDENTIALS, False)
             return Response(json.dumps(notFoundResponse.__dict__), status = 200)
     
         if user != None and user.password == password:
+            responseObject = {}
+
             response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-            return Response(json.dumps(response.__dict__), status = 200)
+            responseObject['status'] = json.loads(response.toJson())
+            responseObject['userId'] = user.userId
+            responseObject['cartId'] = idCart
+            jsonResponse = json.dumps(responseObject)
+
+            return Response(jsonResponse,status=200)
         
         response = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_CREDENTIALS, constants.RESPONSE_MESSAGE_ERROR_INVALID_CREDENTIALS, False)
         return Response(json.dumps(response.__dict__), status = 200)

@@ -9,7 +9,6 @@
 
 <script>
 import CardProducts from 'components/CardProducts.vue'
-// import { LOAD_USER_INFO } from '../store/user/types'
 import { LOAD_PRODUCTS } from '../store/product/types'
 
 export default {
@@ -23,9 +22,7 @@ export default {
   },
   mounted: function () {
     console.log('MOUNTED')
-    // this.$store.dispatch(LOAD_USER_INFO).then(() => {
     this.$store.dispatch(LOAD_PRODUCTS)
-    // })
   },
   computed: {
     firstName: function () {

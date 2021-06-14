@@ -36,6 +36,8 @@
 
 <script>
 import { api } from 'boot/axios'
+import { SET_USER_ID } from '../store/user/types'
+import { SET_CART_ID } from '../store/cart/types'
 
 export default {
   name: 'Login',
@@ -56,14 +58,16 @@ export default {
         password: this.password
       })
         .then((response) => {
-          if (!response.data.success) {
+          if (!response.data.status.success) {
             this.$q.notify({
               color: 'negative',
               position: 'top',
-              message: response.data.message,
+              message: response.data.status.message,
               icon: 'report_problem'
             })
           } else {
+            this.$store.commit(SET_USER_ID, response.data.userId)
+            this.$store.commit(SET_CART_ID, response.data.cartId)
             this.$router.push('/desktop')
             // this.data = response.data
           }

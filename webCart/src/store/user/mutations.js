@@ -4,5 +4,8 @@ export default {
     console.log(data)
     state.firstName = data.firstName
     state.lastName = data.lastName
+  },
+  setUserId: function (state, userId) {
+    state.userId = userId
   }
 }

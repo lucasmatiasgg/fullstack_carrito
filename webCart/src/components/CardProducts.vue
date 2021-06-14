@@ -11,8 +11,17 @@
       <q-card-section class="q-pt-none">
         ${{ price }}
       </q-card-section>
+      <div class="q-pa-md">
+        <q-input
+          label="Cantidad"
+          v-model.number="quantity"
+          type="number"
+          filled
+          style="max-width: 100px"
+        />
+      </div>
       <q-card-actions>
-        <q-btn v-on:click="addProductToCart(name)" flat>Agregar al carrito</q-btn>
+        <q-btn v-on:click="addProductToCart(productId, quantity, userId)" flat color="secondary">Agregar al carrito</q-btn>
       </q-card-actions>
     </q-card>
 
@@ -20,10 +29,19 @@
 </template>
 
 <script>
-import { LOAD_USER_INFO } from '../store/user/types'
-
+import { ADD_PRODUCT_TO_CART } from '../store/cart/types'
 export default {
+  data () {
+    return {
+      quantity: 1,
+      userId: this.$store.state.user.userId
+    }
+  },
   props: {
+    productId: {
+      type: Number,
+      default: 0
+    },
     name: {
       type: String,
       required: true
@@ -41,12 +59,20 @@ export default {
       default: 'https://cdn.quasar.dev/img/mountains.jpg'
     }
   },
-  mounted: function () {
-    this.$store.dispatch(LOAD_USER_INFO)
-  },
   methods: {
-    addProductToCart (name) {
-      alert('ADD:' + name)
+    addProductToCart (productId, quantity, userId) {
+      const data = { productId, quantity, userId }
+      console.log('ANTES DE HACER DISPATCH addProductToCart')
+      console.log(data.productId + ' - ' + data.quantity)
+      this.$store.dispatch(ADD_PRODUCT_TO_CART, { data }).then(() => {
+        this.$q.notify({
+          color: 'positive',
+          position: 'top',
+          message: 'Producto agregado',
+          icon: 'check_circle'
+        })
+      }
+      )
     }
   }
 }
