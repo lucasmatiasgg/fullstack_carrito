@@ -32,7 +32,7 @@ def createProduct():
         product.name = name
         product.description = description
         product.price = price
-        product.image = image
+        product.image = image.encode('utf-8')
 
         save(product)
 
@@ -57,9 +57,26 @@ def getProductByName(id):
         return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
     
     if product != None:
-        print(product.__dict__)
+        # print(product.__dict__)
+        
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-        return Response(json.dumps(product.products_to_dict()),status=200)
+        responseObject = {}
+        
+        responseObject['status'] = json.loads(response.toJson())
+        
+        productsObj={}
+        productsObj['productId'] = product.productId
+        productsObj['name'] = product.name
+        productsObj['description'] = product.description
+        productsObj['price'] = product.price
+        productsObj['image'] = product.image.decode('utf-8')
+        responseObject['products'] = productsObj
+        jsonResponse = json.dumps(responseObject)
+
+        return Response(jsonResponse,status=200)
+
+        # response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+        # return Response(json.dumps(product.products_to_dict()),status=200)
     
     notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
     return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
@@ -135,9 +152,19 @@ def getProducts():
     for product in products:    
 
         print("\nPRODUCT")
-        print(type(product.products_to_dict()))
-        print(product.products_to_dict())
-        productList.append(product.products_to_dict())
+        # print(type(product.products_to_dict()))
+        # print(product.products_to_dict())
+
+        productsObj={}
+        productsObj['productId'] = product.productId
+        productsObj['name'] = product.name
+        productsObj['description'] = product.description
+        productsObj['price'] = product.price
+        productsObj['image'] = product.image.decode('utf-8')
+
+
+
+        productList.append(productsObj)
     
     print("productList = ", productList)
 
