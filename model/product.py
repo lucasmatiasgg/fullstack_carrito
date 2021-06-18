@@ -13,7 +13,7 @@ class Product(config.Base, ProductsToDict):
     name = config.Column(config.String(50))
     description = config.Column(config.String(100))
     price = config.Column(config.Float(50))
-    image = config.Column(config.LargeBinary)
+    image = config.Column(config.LargeBinary(length=(2**32)-1))
 
 def save(self):
     config.save_to_db(self)

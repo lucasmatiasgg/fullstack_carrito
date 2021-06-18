@@ -115,7 +115,7 @@ def createProduct():
 def getProductsByCartId(id):
     if id != None:
 
-        results =  session.query(Item.quantity, Product.name, Product.price, Item.amount, Product.productId). \
+        results =  session.query(Item.quantity, Product.name, Product.price, Item.amount, Product.productId, Product.image). \
             select_from(Product).join(Item).join(order_item). \
             filter(order_item.columns.cartId == id).all()
 
@@ -131,8 +131,9 @@ def getProductsByCartId(id):
             price = products.price
             amount = products.amount
             idProduct = products.productId
+            image = products.image.decode('utf-8')
 
-            cartProducts = CartProducts(name, quantity, price, amount, idProduct)
+            cartProducts = CartProducts(name, quantity, price, amount, idProduct, image)
             
             cartProductsJSONData = json.loads(cartProducts.toJson())
             print("\ncartProductsJSONData")

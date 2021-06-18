@@ -146,7 +146,7 @@ def validateCredentials():
     if request.get_json():
         userName = request.get_json().get('userName')
         password = request.get_json().get('password')
-        
+        responseObject = {}
 
         if userName == None or password == None :
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
@@ -160,11 +160,15 @@ def validateCredentials():
             print('IDCART', idCart)
         except Exception as e:
             print(e)
+            
             notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_CREDENTIALS, constants.RESPONSE_MESSAGE_ERROR_INVALID_CREDENTIALS, False)
-            return Response(json.dumps(notFoundResponse.__dict__), status = 200)
+            responseObject['status'] = json.loads(notFoundResponse.toJson())
+            jsonResponse = json.dumps(responseObject)
+            return Response(jsonResponse,status=200)
+            # return Response(json.dumps(notFoundResponse.__dict__), status = 200)
     
+        
         if user != None and user.password == password:
-            responseObject = {}
 
             response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
             responseObject['status'] = json.loads(response.toJson())
@@ -175,7 +179,9 @@ def validateCredentials():
             return Response(jsonResponse,status=200)
         
         response = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_CREDENTIALS, constants.RESPONSE_MESSAGE_ERROR_INVALID_CREDENTIALS, False)
-        return Response(json.dumps(response.__dict__), status = 200)
+        responseObject['status'] = json.loads(response.toJson())
+        jsonResponse = json.dumps(responseObject)
+        return Response(jsonResponse,status=200)
     
     errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
     return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')

@@ -1,8 +1,7 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
     <q-card class="my-card" >
-      <q-img src="https://cdn.quasar.dev/img/mountains.jpg" />
-
+      <q-img :src="imageSource" height="200px" width="200px"/>
       <q-card-section>
         <div class="text-h6">{{name}}</div>
       </q-card-section>
@@ -27,6 +26,11 @@
 <script>
 import { DELETE_PRODUCT_FROM_CART } from '../store/cart/types'
 export default {
+  data () {
+    return {
+      imageSource: this.$props.image
+    }
+  },
   props: {
     name: {
       type: String,

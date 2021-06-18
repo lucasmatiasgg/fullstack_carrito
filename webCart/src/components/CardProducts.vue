@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
     <q-card class="my-card" >
-      <q-img src="https://cdn.quasar.dev/img/mountains.jpg" />
-
+      <q-img :src="imageSource" height="200px" width="200px"/>
+      <!-- <img :src="imageSource"/> -->
       <q-card-section>
         <div class="text-h6">{{name}}</div>
         <div class="text-subtitle2">{{description}}</div>
@@ -34,7 +34,8 @@ export default {
   data () {
     return {
       quantity: 1,
-      userId: this.$store.state.user.userId
+      userId: this.$store.state.user.userId,
+      imageSource: this.$props.image
     }
   },
   props: {
