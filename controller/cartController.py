@@ -51,8 +51,6 @@ def createProduct():
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_GENERIC, constants.RESPONSE_MESSAGE_ERROR_GENERIC, False)
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
         
-        # Agregamos un nuevo item con los datos ingresados
-        idItem = addNewItem(idProduct, quantity, totalItem)
 
         # Buscamos el carrito del usuario
         idCart = getCartIdByUser(idUser)
@@ -62,6 +60,10 @@ def createProduct():
         if idCart == 0:
             idCart = createCartByUser(idUser)
 
+        # Agregamos un nuevo item con los datos ingresados
+        idItem = addNewItem(idProduct, quantity, totalItem)
+        
+        
         result = updateCart(idCart, idItem, totalItem)
 
         if result == 0:
@@ -81,7 +83,7 @@ def createProduct():
 def getProductsByCartId(id):
     if id != None:
 
-        results =  session.query(Item.quantity, Product.name, Product.price, Item.amount). \
+        results =  session.query(Item.quantity, Product.name, Product.price, Item.amount, Product.productId). \
             select_from(Product).join(Item).join(order_item). \
             filter(order_item.columns.cartId == id).all()
 
@@ -96,8 +98,9 @@ def getProductsByCartId(id):
             quantity = products.quantity
             price = products.price
             amount = products.amount
+            idProduct = products.productId
 
-            cartProducts = CartProducts(name, quantity, price, amount)
+            cartProducts = CartProducts(name, quantity, price, amount, idProduct)
             
             cartProductsJSONData = json.loads(cartProducts.toJson())
             print("\ncartProductsJSONData")
@@ -204,32 +207,45 @@ def updateCart(idCart, idItem, totalItem):
     return -1
 
 
-@cartController.route('/carts/deleteItem/<int:idProduct>', methods=['DELETE'])
-def deleteItem(idProduct):
+@cartController.route('/carts/deleteItem/', methods=['DELETE'])
+def deleteItem():
+
+    idProduct  = request.args.get('idProduct', None)
+    idCart  = request.args.get('idCart', None)
+
     if idProduct  == None:
         errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PRODUCT_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_PRODUCT_NOT_EXISTS, False)
         return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
 
     idToDelete =  session.query(Item.item_id). \
                     select_from(Item).join(order_item). \
-                    filter(order_item.columns.item_id == Item.item_id and \
-                    Item.productId == idProduct and order_item.columns.cartId == 2).first()
+                    filter(order_item.columns.item_id == Item.item_id). \
+                    filter(Item.productId == idProduct). \
+                    filter(order_item.columns.cartId == idCart).scalar()
 
-    print ('==============')
+    print ('=======ID======')
     print (idToDelete)
-    print ('==============')
+    print ('=======ID======')
     
-    stmtDelete = (
+    orderItem_Delete = (
+        delete(order_item).
+        where(order_item.columns.item_id == idToDelete)
+    )
+
+    item_Delete = (
         delete(Item).
-        where(Item.productId == idToDelete)
+        where(Item.item_id == idToDelete)
     )
 
     print ('==============')
-    print (stmtDelete)
+    print (orderItem_Delete)
+    print ('#################')
+    print (item_Delete)
     print ('==============')
     
-    # session.execute(stmtDelete)
-    # session.commit()
+    session.execute(orderItem_Delete)
+    session.execute(item_Delete)
+    session.commit()
     
 
     response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)

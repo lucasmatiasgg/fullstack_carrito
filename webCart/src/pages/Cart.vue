@@ -4,7 +4,7 @@
       <div class="row ">
       <CartProducts
           v-for="data in productsData"
-          :key="data.name"
+          :key="data.idProduct"
           v-bind="data"/>
       </div>
       <div class="row justify-center">

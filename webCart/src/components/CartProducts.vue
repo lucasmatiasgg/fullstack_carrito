@@ -17,7 +17,7 @@
         Total: ${{ amount }}
       </q-card-section>
       <q-card-actions>
-        <q-btn v-on:click="removeProductFromCart(name)" flat>Eliminar</q-btn>
+        <q-btn v-on:click="removeProductFromCart(idCart, idProduct)" flat>Eliminar</q-btn>
       </q-card-actions>
     </q-card>
 
@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { DELETE_PRODUCT_FROM_CART } from '../store/cart/types'
 export default {
   props: {
     name: {
@@ -46,11 +47,30 @@ export default {
     image: {
       type: String,
       default: 'https://cdn.quasar.dev/img/mountains.jpg'
+    },
+    idProduct: {
+      type: Number,
+      required: true
+    }
+  },
+  computed: {
+    idCart: function () {
+      return this.$store.state.cart.idCart
     }
   },
   methods: {
-    removeProductFromCart (name) {
-      alert('REMOVE:' + name)
+    removeProductFromCart (idCart, idProduct) {
+      const data = { idCart, idProduct }
+      console.log('REMOVE PRODUCT:' + idCart + '-' + idProduct)
+      this.$store.dispatch(DELETE_PRODUCT_FROM_CART, { data }).then(() => {
+        this.$q.notify({
+          color: 'negative',
+          position: 'top',
+          message: 'Producto eliminado',
+          icon: 'check_circle'
+        })
+      }
+      )
     }
   }
 }
