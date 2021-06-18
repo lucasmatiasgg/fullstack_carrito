@@ -54,17 +54,49 @@ def createProduct():
 
         # Buscamos el carrito del usuario
         idCart = getCartIdByUser(idUser)
+
+        cant_producto = session.query(Item.productId). \
+                    select_from(Item).join(order_item). \
+                    filter(order_item.columns.item_id == Item.item_id). \
+                    filter(Item.productId == idProduct). \
+                    filter(order_item.columns.cartId == idCart).count()
+
+        #cant_producto = session.query(Item.productId). \
+                    #select_from(Item).count()
+        
+        print("CANTIDAD DE PRODUCTOS: ", cant_producto)
         
         print("addProductToCart-idCart:" + str(idCart))
         # Si idCart es == 0 es porque no existe el carrito asociado al usuario y lo tenemos que crear
         if idCart == 0:
             idCart = createCartByUser(idUser)
 
-        # Agregamos un nuevo item con los datos ingresados
-        idItem = addNewItem(idProduct, quantity, totalItem)
         
-        
-        result = updateCart(idCart, idItem, totalItem)
+
+        item = session.query(Item.item_id, Item.quantity). \
+                    select_from(Item).join(order_item).join(Product). \
+                    filter(order_item.columns.item_id == Item.item_id). \
+                    filter(Item.productId == idProduct). \
+                    filter(order_item.columns.cartId == idCart).first()
+
+
+        if(cant_producto > 0):
+
+            # Ya existe el item, asique agregamos la cantidad que se solicita
+            newQuantity = item.quantity + quantity
+            print("----------------------------------------------")
+            print("CANTIDAD ACTUAL:", item.quantity)
+            print("QUANTITY A INGRESAR: ", quantity)
+            print("NEW QUANTITY: ",newQuantity)
+            print("----------------------------------------------")
+            newAmount = newQuantity * unitPrice
+            print("New Amount:", newAmount)
+            updateQuantityItem(item.item_id, idProduct, newQuantity, newAmount,idCart) #Dentro de esta funcion, con estos datos que paso, actualizar el carrito
+            result = 0
+        else:
+            # Agregamos un nuevo item con los datos ingresados
+            idItem = addNewItem(idProduct, quantity, totalItem)
+            result = updateCart(idCart, idItem, totalItem)
 
         if result == 0:
             responseObject = {}
@@ -206,6 +238,32 @@ def updateCart(idCart, idItem, totalItem):
         return 0
     return -1
 
+def updateQuantityItem(item_id, idProduct, newQuantity, newAmount, idCart):
+    #FALTAN VALIDACIONES
+    print("Antes de la query actualizar")
+    stmt = (
+            update(Item).
+            where(Item.item_id == item_id).
+            values(quantity=newQuantity, amount = newAmount)
+        )
+
+    cart = session.query(Cart).filter_by(cartId=idCart).first()
+
+    print("TOTAL AMOUNT HASTA AHORA: ", cart.totalAmount)
+    
+    #No se está actualizando el totalAmount de cart. Solo falta eso
+    cartStmt = (
+            update(Cart).
+            where(Cart.cartId == idCart).
+            values(totalAmount=cart.totalAmount + newAmount)
+        )
+    session.execute(stmt)
+    session.execute(cartStmt)
+    session.commit()
+
+    
+    #session.commit()
+    print("Despues de la query actualizar")
 
 @cartController.route('/carts/deleteItem/', methods=['DELETE'])
 def deleteItem():
