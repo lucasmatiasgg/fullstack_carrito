@@ -14,15 +14,8 @@
 </template>
 
 <script>
-// import EssentialLink from 'components/EssentialLink.vue'
 
 export default {
   name: 'LoginLayout'
-  // components: { EssentialLink },
-  // data () {
-  //   return {
-  //     leftDrawerOpen: false,
-  //   }
-  // }
 }
 </script>

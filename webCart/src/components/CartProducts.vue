@@ -16,7 +16,7 @@
         Total: ${{ amount }}
       </q-card-section>
       <q-card-actions>
-        <q-btn v-on:click="removeProductFromCart(idCart, idProduct)" flat>Eliminar</q-btn>
+        <q-btn v-on:click="removeProductFromCart(idCart, idProduct)" color="negative" flat>Eliminar</q-btn>
       </q-card-actions>
     </q-card>
 

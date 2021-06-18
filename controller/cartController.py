@@ -61,8 +61,6 @@ def createProduct():
                     filter(Item.productId == idProduct). \
                     filter(order_item.columns.cartId == idCart).count()
 
-        #cant_producto = session.query(Item.productId). \
-                    #select_from(Item).count()
         
         print("CANTIDAD DE PRODUCTOS: ", cant_producto)
         
@@ -119,9 +117,6 @@ def getProductsByCartId(id):
             select_from(Product).join(Item).join(order_item). \
             filter(order_item.columns.cartId == id).all()
 
-        print ("......................................results......................................")
-        print (results)
-        print ("......................................results......................................")
         orderItemList = []
 
 
@@ -136,15 +131,8 @@ def getProductsByCartId(id):
             cartProducts = CartProducts(name, quantity, price, amount, idProduct, image)
             
             cartProductsJSONData = json.loads(cartProducts.toJson())
-            print("\ncartProductsJSONData")
-            print(cartProductsJSONData)
-            print(type(cartProductsJSONData))
             orderItemList.append(cartProductsJSONData)
         
-        
-        print("orderItemList")
-        print(orderItemList)
-
             
         if orderItemList.count != 0:
             responseObject = {}
@@ -240,7 +228,6 @@ def updateCart(idCart, idItem, totalItem):
     return -1
 
 def updateQuantityItem(item_id, idProduct, newQuantity, newAmount, idCart):
-    #FALTAN VALIDACIONES
     print("Antes de la query actualizar")
     stmt = (
             update(Item).
@@ -252,7 +239,6 @@ def updateQuantityItem(item_id, idProduct, newQuantity, newAmount, idCart):
 
     print("TOTAL AMOUNT HASTA AHORA: ", cart.totalAmount)
     
-    #No se está actualizando el totalAmount de cart. Solo falta eso
     cartStmt = (
             update(Cart).
             where(Cart.cartId == idCart).
@@ -261,10 +247,6 @@ def updateQuantityItem(item_id, idProduct, newQuantity, newAmount, idCart):
     session.execute(stmt)
     session.execute(cartStmt)
     session.commit()
-
-    
-    #session.commit()
-    print("Despues de la query actualizar")
 
 @cartController.route('/carts/deleteItem/', methods=['DELETE'])
 def deleteItem():

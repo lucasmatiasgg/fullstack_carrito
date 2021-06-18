@@ -17,6 +17,7 @@
 
         <q-input
           filled
+          type="password"
           v-model="password"
           label="Password"
           :rules="[ val => val && val.length > 0 || 'Este campo es obligatorio']"

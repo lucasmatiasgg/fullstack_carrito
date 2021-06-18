@@ -57,7 +57,6 @@ def getProductByName(id):
         return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
     
     if product != None:
-        # print(product.__dict__)
         
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
         responseObject = {}
@@ -74,9 +73,6 @@ def getProductByName(id):
         jsonResponse = json.dumps(responseObject)
 
         return Response(jsonResponse,status=200)
-
-        # response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-        # return Response(json.dumps(product.products_to_dict()),status=200)
     
     notFoundResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_NOT_CONTENT, constants.RESPONSE_MESSAGE_ERROR_NOT_FOUND, False)
     return Response(json.dumps(notFoundResponse.__dict__), status=404, mimetype='application/json')
@@ -142,18 +138,12 @@ def deleteProduct(id):
 @productController.route('/products/getAllProducts')
 def getProducts():
     
-    # TODO Hay que usar paginacion
-    
     products = session.query(Product)
     responseObject = {}
     
     
     productList = []
     for product in products:    
-
-        print("\nPRODUCT")
-        # print(type(product.products_to_dict()))
-        # print(product.products_to_dict())
 
         productsObj={}
         productsObj['productId'] = product.productId
@@ -162,11 +152,8 @@ def getProducts():
         productsObj['price'] = product.price
         productsObj['image'] = product.image.decode('utf-8')
 
-
-
         productList.append(productsObj)
     
-    print("productList = ", productList)
 
     if productList.count != 0:
         response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
@@ -184,7 +171,5 @@ def getProducts():
 def getPriceById(id):
     if id != None:
          product = session.query(Product).filter_by(productId=id).first()
-         print("getPriceById - PRODUCT")
-         print(product)
          return product.price
     return 0

@@ -165,8 +165,6 @@ def validateCredentials():
             responseObject['status'] = json.loads(notFoundResponse.toJson())
             jsonResponse = json.dumps(responseObject)
             return Response(jsonResponse,status=200)
-            # return Response(json.dumps(notFoundResponse.__dict__), status = 200)
-    
         
         if user != None and user.password == password:
 
