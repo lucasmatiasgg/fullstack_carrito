@@ -7,6 +7,7 @@ DEBUG = False
 
 Base = declarative_base()
 engine = create_engine('mysql+mysqlconnector://lgomez:password@localhost:3306')
+# engine = create_engine('mysql+mysqlconnector://admin:password@shoppingcart.cnppf1iajcbc.us-east-1.rds.amazonaws.com:3306')
 
 session = sessionmaker()
 session.configure(bind=engine)
