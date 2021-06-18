@@ -62,7 +62,7 @@ export default {
         } else {
           console.log('DELETE_PRODUCT_FROM_CART-OK')
           console.log(response.data)
-          commit('deleteProductsFromCart', info.data.idCart)
+          commit('deleteProductsFromCart', info.data.idProduct)
         }
       })
       .catch((error) => {

@@ -9,7 +9,6 @@ export default {
   },
   deleteProductsFromCart: function (state, data) {
     console.log('mutation-deleteProductsFromCart')
-    console.log(data.idCart)
-    state.productCartList.remove(data.idCart)
+    state.productCartList = state.productCartList.filter(val => val.idProduct !== data)
   }
 }
