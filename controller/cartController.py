@@ -13,6 +13,7 @@ from model.cart import Cart, save
 from controller.productController import getPriceById
 from model.user import User
 from model.cartProducts import CartProducts, CartProductsEncoder
+from datetime import date, time, datetime
 import constants
 
 
@@ -172,8 +173,11 @@ def addNewItem(idProduct, quantity, totalItem):
     
 def getCartIdByUser(idUser):
     if idUser != None:
-        historyCart = session.query(history_cart).filter_by(userId=idUser).first()
-         
+
+        historyCart = session.query(history_cart).\
+                    filter_by(userId = idUser). \
+                    filter_by(close_date = None).first()
+        
         if historyCart != None:
             print("getCartIdByUser - historyCart")
             print(historyCart.cartId)
@@ -291,3 +295,37 @@ def deleteItem():
 
     response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
     return Response(json.dumps(response.__dict__), status = 200)
+
+@cartController.route('/carts/finishPurchase', methods=['POST'])
+def finishPurchase():
+    if request.get_json():
+
+        idCart = request.get_json().get('idCart')
+        idUser = request.get_json().get('idUser')
+
+        if idCart == None or idUser == None:
+            errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
+            return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
+        
+
+        print("FECHA")
+        print(datetime.now())
+        session.query(history_cart).\
+            filter_by(cartId = idCart).\
+            update({"close_date": (datetime.now())})
+        
+        session.commit()
+               
+        # Creamos un nuevo carrito para el usuario
+        idCart = createCartByUser(idUser)
+
+        responseObject = {}
+
+        response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+        responseObject['status'] = json.loads(response.toJson())
+        responseObject['newIdCart'] = idCart
+        jsonResponse = json.dumps(responseObject)
+        return Response(jsonResponse,status=200)
+    
+    errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
+    return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
