@@ -1,4 +1,4 @@
-import { LOAD_PRODUCTS_FROM_CART, ADD_PRODUCT_TO_CART, DELETE_PRODUCT_FROM_CART } from './types'
+import { LOAD_PRODUCTS_FROM_CART, ADD_PRODUCT_TO_CART, DELETE_PRODUCT_FROM_CART, FINISH_PURCHASE } from './types'
 import { api } from 'boot/axios'
 
 export default {
@@ -63,6 +63,23 @@ export default {
           console.log('DELETE_PRODUCT_FROM_CART-OK')
           console.log(response.data)
           commit('deleteProductsFromCart', info.data.idProduct)
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  },
+  [FINISH_PURCHASE] ({ commit }, info) {
+    api.post('/carts/finishPurchase',
+      {
+        idCart: info.data.cartId,
+        idUser: info.data.userId
+      })
+      .then((response) => {
+        if (!response.data.status.success) {
+          console.log(response.data.status.message)
+        } else {
+          commit('setCartId', response.data.newIdCart)
         }
       })
       .catch((error) => {

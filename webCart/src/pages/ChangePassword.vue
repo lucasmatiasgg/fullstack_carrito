@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h5>Modificar datos de usuario</h5>
+        <h5>Modificar contraseña</h5>
         <div class="q-pa-md" style="max-width:100%">
             <div class="row justify-center">
                 <q-form
