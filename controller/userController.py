@@ -91,6 +91,7 @@ def updateUser(id):
     if request.get_json and id != None:
         first = request.get_json().get('firstName')
         last = request.get_json().get('lastName')
+        oldPassword = request.get_json().get('oldPassword')
     
         count = session.query(User).filter_by(userId = id).count()
 
@@ -98,21 +99,30 @@ def updateUser(id):
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_USER_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_USER_NOT_EXISTS, False)
             return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
         
-        if first == None or last == None:
+        if first == None or last == None or oldPassword == None:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
         
-
-        stmt = (
-                update(User).
-                where(User.userId==id).
-                values(firstName=first, lastName = last)
-            )
-        print(stmt)
-        session.execute(stmt)
-        session.commit()
-        response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
-        return Response(json.dumps(response.__dict__),status=201)
+        user = session.query(Credential).filter_by(userId = id).first()
+        print(user.password)
+        print("Antes de validar pw")
+        if(user.password == oldPassword):
+            print("Estoy dentro del if. Ya valide la contraseña")
+            stmt = (
+                    update(User).
+                    where(User.userId==id).
+                    values(firstName=first, lastName = last)
+                )
+            #print(stmt)
+            session.execute(stmt)
+            print("Ejecute stmt")
+            session.commit()
+            response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+            return Response(json.dumps(response.__dict__),status=200)
+            
+        else:
+            errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_PASSWORD, constants.RESPONSE_MESSAGE_ERROR_INVALID_PASSWORD, False)
+            return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
 
     errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
     return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
@@ -181,5 +191,46 @@ def validateCredentials():
         jsonResponse = json.dumps(responseObject)
         return Response(jsonResponse,status=200)
     
+    errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
+    return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
+
+@userController.route('/users/updatePassword/<int:id>', methods=['PUT'])
+def updatePassword(id):
+
+    if request.get_json and id != None:
+        newPassword = request.get_json().get('newPassword')
+        oldPassword = request.get_json().get('oldPassword')
+    
+        count = session.query(User).filter_by(userId = id).count()
+
+        if count == 0:
+            errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_USER_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_USER_NOT_EXISTS, False)
+            return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
+        
+        if  newPassword == None or oldPassword == None:
+            errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
+            return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
+        
+        user = session.query(Credential).filter_by(userId = id).first()
+        print(user.password)
+        print("Antes de validar pw")
+        if(user.password == oldPassword):
+            print("Estoy dentro del if. Ya valide la contraseña")
+
+            stmtPw = (
+                update (Credential).
+                where(Credential.userId == id).
+                values(password = newPassword)
+            )
+            session.execute(stmtPw)
+            print("Ya ejecute stmtPw")
+            session.commit()
+            response = EntityResponse(constants.RESPONSE_CODE_OK, constants.RESPONSE_MESSAGE_OK, True)
+            return Response(json.dumps(response.__dict__),status=200)
+            
+        else:
+            errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_INVALID_PASSWORD, constants.RESPONSE_MESSAGE_ERROR_INVALID_PASSWORD, False)
+            return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
+
     errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_BAD_REQUEST, constants.RESPONSE_MESSAGE_ERROR_BAD_REQUEST, False)
     return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')

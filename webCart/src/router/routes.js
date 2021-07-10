@@ -13,7 +13,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Desktop.vue') },
-      { path: '/cart', component: () => import('pages/Cart.vue') }
+      { path: '/cart', component: () => import('pages/Cart.vue') },
+      { path: '/changeName', component: () => import('pages/Preferences') },
+      { path: '/changePassword', component: () => import('pages/ChangePassword') },
+      { path: '/buyOrder', component: () => import('pages/BuyOrder') }
     ]
   },
 
