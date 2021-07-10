@@ -49,9 +49,15 @@
 const menuList = [
   {
     icon: 'settings',
-    label: 'Preferencias',
+    label: 'Modificar datos de usuario',
+    separator: true
+  },
+  {
+    icon: 'settings',
+    label: 'Cambiar contraseña',
     separator: true
   }
+
 ]
 
 export default {
@@ -71,8 +77,10 @@ export default {
     },
     handleClick: function (name) {
       console.log(name)
-      if (name === 'Preferencias') {
-        alert('Aca hay que redirigir a preferencias')
+      if (name === 'Modificar datos de usuario') {
+        this.$router.push('/changeName')
+      } else if (name === 'Cambiar contraseña') {
+        this.$router.push('/changePassword')
       }
     }
   }

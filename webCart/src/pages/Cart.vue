@@ -8,7 +8,7 @@
           v-bind="data"/>
       </div>
       <div class="row justify-center">
-          <q-btn v-on:click="buyOrder" label="Finalizar Compra" color="negative" />
+          <q-btn v-on:click="buyOrder" label="Ir al resumen de compra" color="negative" />
       </div>
       <div class="row justify-center">
           <q-btn v-on:click="goBack" label="Volver" color="secondary" />
@@ -55,7 +55,7 @@ export default {
       this.$router.push('/desktop')
     },
     buyOrder () {
-      console.log('Compra realizada!')
+      this.$router.push('/BuyOrder')
     }
   }
 }
