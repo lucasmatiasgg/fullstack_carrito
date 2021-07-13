@@ -91,7 +91,7 @@ def updateUser(id):
     if request.get_json and id != None:
         first = request.get_json().get('firstName')
         last = request.get_json().get('lastName')
-        password = request.get_json().get('password')
+        oldPassword = request.get_json().get('oldPassword')
     
         count = session.query(User).filter_by(userId = id).count()
 
@@ -99,14 +99,14 @@ def updateUser(id):
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_USER_NOT_EXISTS, constants.RESPONSE_MESSAGE_ERROR_USER_NOT_EXISTS, False)
             return Response(json.dumps(errorResponse.__dict__), status=404, mimetype='application/json')
         
-        if first == None or last == None or password == None:
+        if first == None or last == None or oldPassword == None:
             errorResponse = EntityResponse(constants.RESPONSE_CODE_ERROR_PARAMS_REQUIRED, constants.RESPONSE_MESSAGE_ERROR_PARAMS_REQUIRED, False)
             return Response(json.dumps(errorResponse.__dict__), status=400, mimetype='application/json')
         
         user = session.query(Credential).filter_by(userId = id).first()
         print(user.password)
         print("Antes de validar pw")
-        if(user.password == password):
+        if(user.password == oldPassword):
             print("Estoy dentro del if. Ya valide la contraseña")
             stmt = (
                     update(User).
